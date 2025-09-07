@@ -1,0 +1,26 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() { return request.auth != null; }
+    function uid() { return request.auth != null ? request.auth.uid : null; }
+    function hasRole(role) { return isSignedIn() && role in request.auth.token.roles; }
+
+    // User avatars: user_uploads/{uid}/avatar.jpg
+    match /user_uploads/{userId}/{allPaths=**} {
+      allow read: if true; // avatars are public
+      allow write: if isSignedIn() && userId == uid();
+    }
+
+    // Company logos: company_uploads/{companyId}/logo.png
+    match /company_uploads/{companyId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if hasRole("admin") || hasRole("recruiter");
+    }
+
+    // Attachments in chats: chat_uploads/{chatId}/...
+    match /chat_uploads/{chatId}/{allPaths=**} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

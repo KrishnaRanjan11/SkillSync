@@ -1,0 +1,11 @@
+{
+  "name": "skillsync-seed",
+  "type": "module",
+  "scripts": {
+    "start": "ts-node seed.ts"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "ts-node": "^10.9.2"
+  }
+}
